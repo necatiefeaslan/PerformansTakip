@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "174422134123",
+    "project_id": "performanstakip-90c3f",
+    "storage_bucket": "performanstakip-90c3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174422134123:android:8dfe30cca3ddc1e951102e",
+        "android_client_info": {
+          "package_name": "tr.com.example.performanstakip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2Lr1AW1Fp6dBW6iqY94dZpKc4X3qHslI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
