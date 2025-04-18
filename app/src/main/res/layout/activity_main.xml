@@ -28,7 +28,6 @@
         android:layout_height="wrap_content"
         android:hint="E-posta"
         android:inputType="textEmailAddress"
-        android:drawableEnd="e"
         android:padding="16dp"
         android:textColor="#212121"
         app:layout_constraintTop_toBottomOf="@id/tvLoginTitle"
