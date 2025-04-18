@@ -35,7 +35,7 @@ class KiyafetKontrolActivity : AppCompatActivity() {
                     .set(data, com.google.firebase.firestore.SetOptions.merge()) // var olan verilere ekler
 
                     .addOnSuccessListener {
-                        Toast.makeText(this, "Firestore'a kaydedildi ✅", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Kaydedildi ✅", Toast.LENGTH_SHORT).show()
                         finish()
                     }
                     .addOnFailureListener {

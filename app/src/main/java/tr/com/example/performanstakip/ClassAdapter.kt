@@ -1,11 +1,11 @@
 package tr.com.example.performanstakip
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import tr.com.example.performanstakip.databinding.ItemClassBinding
 
 class ClassAdapter(
     private val classList: List<String>,
@@ -13,14 +13,13 @@ class ClassAdapter(
 ) : RecyclerView.Adapter<ClassAdapter.ClassViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClassViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
-        return ClassViewHolder(view)
+        val binding = ItemClassBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ClassViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ClassViewHolder, position: Int) {
         val className = classList[position]
-        holder.classNameText.text = className
+        holder.binding.tvClassName.text = className
         holder.itemView.setOnClickListener {
             onItemClick(className)
         }
@@ -28,8 +27,5 @@ class ClassAdapter(
 
     override fun getItemCount(): Int = classList.size
 
-    class ClassViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val classNameText: TextView = itemView.findViewById(android.R.id.text1)
-    }
+    class ClassViewHolder(val binding: ItemClassBinding) : RecyclerView.ViewHolder(binding.root)
 }
-
