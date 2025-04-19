@@ -45,5 +45,8 @@ class PerformansKontrolActivity : AppCompatActivity() {
                 Toast.makeText(this, "Lütfen boş bırakmayın", Toast.LENGTH_SHORT).show()
             }
         }
+        binding.btnGeri.setOnClickListener {
+            finish()
+        }
     }
 }

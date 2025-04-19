@@ -4,36 +4,35 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
-import tr.com.example.performanstakip.databinding.ActivityKiyafetKontrolBinding
+import tr.com.example.performanstakip.databinding.ActivityDevamsizlikKontrolBinding
 
-class KiyafetKontrolActivity : AppCompatActivity() {
+class DevamsizlikKontrolActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityKiyafetKontrolBinding
+    private lateinit var binding: ActivityDevamsizlikKontrolBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityKiyafetKontrolBinding.inflate(layoutInflater)
+        binding = ActivityDevamsizlikKontrolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val className = intent.getStringExtra("CLASS_NAME") ?: "Bilinmeyen Sınıf"
+        val className = intent.getStringExtra("CLASS_NAME") ?: ""
         val studentName = intent.getStringExtra("STUDENT_NAME") ?: "Bilinmeyen Öğrenci"
 
-        binding.btnSaveKiyafet.setOnClickListener {
-            val kiyafetDurumu = binding.etKiyafetDurumu.text.toString().trim()
+        binding.btnSaveDevamsizlik.setOnClickListener {
+            val devamsizlikDurumu = binding.etDevamsizlikDurum.text.toString().trim()
 
-            if (kiyafetDurumu.isNotEmpty()) {
+            if (devamsizlikDurumu.isNotEmpty()) {
                 val db = FirebaseFirestore.getInstance()
 
                 val data = mapOf(
-                    "kiyafet" to kiyafetDurumu
+                    "devamsizlik" to devamsizlikDurumu
                 )
 
                 db.collection("kontroller")
                     .document(className)
                     .collection("ogrenciler")
                     .document(studentName)
-                    .set(data, com.google.firebase.firestore.SetOptions.merge()) // var olan verilere ekler
-
+                    .set(data, com.google.firebase.firestore.SetOptions.merge())
                     .addOnSuccessListener {
                         Toast.makeText(this, "Kaydedildi ✅", Toast.LENGTH_SHORT).show()
                         finish()
@@ -45,7 +44,7 @@ class KiyafetKontrolActivity : AppCompatActivity() {
                 Toast.makeText(this, "Lütfen boş bırakmayın", Toast.LENGTH_SHORT).show()
             }
         }
-        binding.btnGeri.setOnClickListener {
+        binding.btnBack.setOnClickListener {
             finish()
         }
     }

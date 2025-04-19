@@ -37,7 +37,7 @@ class KayitActivity : AppCompatActivity() {
 
             if (eposta.isEmpty() || sifre.isEmpty() || ad.isEmpty() || soyad.isEmpty()) {
                 Toast.makeText(this, "Lütfen tüm alanları doldurun", Toast.LENGTH_SHORT).show()
-
+                return@setOnClickListener
             }
 
             auth.createUserWithEmailAndPassword(eposta, sifre)
@@ -48,7 +48,7 @@ class KayitActivity : AppCompatActivity() {
                             "ad" to ad,
                             "soyad" to soyad,
                             "email" to eposta,
-                            "sifre" to sifre,
+
                         )
 
                         db.collection("kullanicilar")
@@ -56,6 +56,12 @@ class KayitActivity : AppCompatActivity() {
                             .set(userMap)
                             .addOnCompleteListener { dbTask ->
                                 if (dbTask.isSuccessful) {
+                                    // ✅ Alanları temizle
+                                    binding.etEmail.setText("")
+                                    binding.etPassword.setText("")
+                                    binding.etFirstName.setText("")
+                                    binding.etLastName.setText("")
+
                                     Toast.makeText(this, "Kayıt başarılı. Lütfen giriş yapınız.", Toast.LENGTH_LONG).show()
 
                                     // Otomatik giriş yaptırmadan çıkış yap
