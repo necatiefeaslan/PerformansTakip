@@ -16,16 +16,16 @@ class StudentDetailActivity : AppCompatActivity() {
 
         // İntent'ten gelen sınıf ve öğrenci ismini al
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
-        val studentName = intent.getStringExtra("STUDENT_NAME") ?: "Bilinmeyen Öğrenci"
+
 
         // Ekrana öğrenci adını yaz
-        binding.tvStudentName.text = "$studentName - $className"
+        binding.tvStudentName.text = className
 
         // Ödev kontrol sayfasına git
         binding.odevKontrol.setOnClickListener {
             val intent = Intent(this, OdevKontrolActivity::class.java)
             intent.putExtra("CLASS_NAME", className)
-            intent.putExtra("STUDENT_NAME", studentName)
+
             startActivity(intent)
         }
 
@@ -33,7 +33,7 @@ class StudentDetailActivity : AppCompatActivity() {
         binding.kiyafetKontrol.setOnClickListener {
             val intent = Intent(this, KiyafetKontrolActivity::class.java)
             intent.putExtra("CLASS_NAME", className)
-            intent.putExtra("STUDENT_NAME", studentName)
+
             startActivity(intent)
         }
 
@@ -41,7 +41,7 @@ class StudentDetailActivity : AppCompatActivity() {
         binding.performans100Kontrol.setOnClickListener {
             val intent = Intent(this, PerformansKontrolActivity::class.java)
             intent.putExtra("CLASS_NAME", className)
-            intent.putExtra("STUDENT_NAME", studentName)
+
             startActivity(intent)
         }
 
@@ -49,7 +49,7 @@ class StudentDetailActivity : AppCompatActivity() {
         binding.devamsizlikKontrol.setOnClickListener {
             val intent = Intent(this, DevamsizlikKontrolActivity::class.java)
             intent.putExtra("CLASS_NAME", className)
-            intent.putExtra("STUDENT_NAME", studentName)
+
             startActivity(intent)
         }
 

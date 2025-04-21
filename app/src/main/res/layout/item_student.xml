@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    card_view:cardCornerRadius="16dp"
-    card_view:cardElevation="8dp"
-    card_view:cardBackgroundColor="@android:color/white">
+    android:layout_marginBottom="8dp"
+    android:elevation="4dp"
+    android:backgroundTint="@android:color/white"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="6dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
+        android:orientation="horizontal"
+        android:padding="16dp"
         android:gravity="center_vertical">
 
-        <!-- Öğrenci Adı -->
+        <!-- Öğrenci Adı ve Numarası -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <!-- Öğrenci Numarası -->
-        <TextView
-            android:id="@+id/tvStudentName"
+            <!-- Öğrenci Adı -->
+            <TextView
+                android:id="@+id/studentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Öğrenci Adı"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <!-- Öğrenci Numarası -->
+            <TextView
+                android:id="@+id/studentNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No: 123"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Ödev Durumu Switch Sağda -->
+        <Switch
+            android:id="@+id/switchOdev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:letterSpacing="0.02"
-            android:maxLines="1"
-            android:text="Öğrenci Adı:"
-            android:textColor="#212121"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvStudentNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Numara:"
-            android:textSize="14sp"
-            android:textColor="#757575"
-            android:layout_marginTop="4dp" />
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="end" />
 
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

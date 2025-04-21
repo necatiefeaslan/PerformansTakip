@@ -25,7 +25,7 @@ class ClassListActivity : AppCompatActivity() {
         binding.rvClassList.layoutManager = LinearLayoutManager(this)
         classAdapter = ClassAdapter(classList) { className ->
             // Tıklanan sınıf ismini öğrenci listesine ilet
-            val intent = Intent(this, StudentListActivity::class.java)
+            val intent = Intent(this, StudentDetailActivity::class.java)
             intent.putExtra("CLASS_NAME", className) // Seçilen sınıf ismini gönder
             intent.putExtra("STUDENT_NAME", studentName) // Seçilen öğrenci adını gönder
             startActivity(intent)

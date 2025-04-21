@@ -6,30 +6,35 @@ import androidx.recyclerview.widget.RecyclerView
 import tr.com.example.performanstakip.databinding.ItemStudentBinding
 
 class StudentAdapter(
-    private val studentList: List<Student>,
-    private val onItemClick: (Student) -> Unit
-) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
+    private val students: List<Student>,
+    private val onSwitchChanged: (Student, Boolean) -> Unit
+) : RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
 
-    inner class StudentViewHolder(val binding: ItemStudentBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // ItemStudentBinding sınıfını inflate ediyoruz
+        val binding = ItemStudentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val student = students[position]
+        holder.bind(student)
+    }
+
+    inner class ViewHolder(private val binding: ItemStudentBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(student: Student) {
-            binding.tvStudentName.text = "Öğrenci Adı: ${student.name}"
-            binding.tvStudentNumber.text = "Numara: ${student.number}"
+            binding.studentName.text = student.name
+            binding.studentNumber.text = student.number.toString()
 
-            binding.root.setOnClickListener {
-                onItemClick(student)
+            // Switch butonunun durumunu ayarlıyoruz
+            binding.switchOdev.isChecked = student.isOdevDone
+
+            // Switch butonunun durumunun değişmesi
+            binding.switchOdev.setOnCheckedChangeListener { _, isChecked ->
+                onSwitchChanged(student, isChecked)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-        val binding = ItemStudentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return StudentViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
-        holder.bind(studentList[position])
-    }
-
-    override fun getItemCount(): Int = studentList.size
+    override fun getItemCount(): Int = students.size
 }

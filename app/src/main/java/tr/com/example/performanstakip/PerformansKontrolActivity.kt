@@ -3,50 +3,77 @@ package tr.com.example.performanstakip
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import tr.com.example.performanstakip.databinding.ActivityPerformansKontrolBinding
 
 class PerformansKontrolActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPerformansKontrolBinding
+    private lateinit var studentAdapter: StudentAdapter
+    private lateinit var studentsList: List<Student>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPerformansKontrolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val className = intent.getStringExtra("CLASS_NAME") ?: "Bilinmeyen Sınıf"
-        val studentName = intent.getStringExtra("STUDENT_NAME") ?: "Bilinmeyen Öğrenci"
+        // Class adı alınıyor
+        val className = intent.getStringExtra("CLASS_NAME") ?: ""
 
-        binding.btnSavePerformans.setOnClickListener {
-            val performansDurumu = binding.etPerformans.text.toString().trim()
+        // Öğrencilerin listesi (Firestore'dan da alınabilir)
+        studentsList = getStudents()
 
-            if (performansDurumu.isNotEmpty()) {
-                val db = FirebaseFirestore.getInstance()
-
-                val data = mapOf(
-                    "performans" to performansDurumu
-                )
-
-                db.collection("kontroller")
-                    .document(className)
-                    .collection("ogrenciler")
-                    .document(studentName)
-                    .set(data, com.google.firebase.firestore.SetOptions.merge()) // var olan verilere ekler
-
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Kaydedildi ✅", Toast.LENGTH_SHORT).show()
-                        finish()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Hata: ${it.message}", Toast.LENGTH_LONG).show()
-                    }
-            } else {
-                Toast.makeText(this, "Lütfen boş bırakmayın", Toast.LENGTH_SHORT).show()
-            }
+        // Adapter'ı oluşturuyoruz ve performans notunu güncellemeyi sağlıyoruz
+        studentAdapter = StudentAdapter(studentsList) { student, performanceNote ->
+           // student.performansNot = performanceNote // Performans notunu güncelliyoruz
         }
-        binding.btnGeri.setOnClickListener {
-            finish()
+
+        // RecyclerView ile öğrenciler listeleniyor
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = studentAdapter
+
+        // Kaydet butonuna tıklama
+        binding.btnSave.setOnClickListener {
+            saveStudentControls(className, studentsList)
+        }
+    }
+
+    private fun getStudents(): List<Student> {
+        // Öğrencilerin listesi Firestore'dan alınabilir
+        return listOf(
+            Student("Ahmet Yılmaz", 123),
+            Student("Mehmet Kaya", 124),
+            Student("Ayşe Demir", 125)
+        )
+    }
+
+    private fun saveStudentControls(className: String, students: List<Student>) {
+        val db = FirebaseFirestore.getInstance()
+
+        students.forEach { student ->
+            val studentData = hashMapOf(
+                "name" to student.name,
+                "number" to student.number,
+                "performans_note" to student.performansNot // Performans notunu kaydediyoruz
+            )
+
+            db.collection("kontroller")
+                .document(className) // Sınıf adıyla belgenin referansı
+                .collection("ogrenciler") // Öğrencilerin koleksiyonu
+                .document(student.name) // Öğrenci ismini benzersiz ID olarak kullanıyoruz
+                .set(
+                    studentData,
+                    com.google.firebase.firestore.SetOptions.merge()
+                ) // Merge işlemi ile eski veriyi silmeden ekleme
+                .addOnSuccessListener {
+                    // Başarı durumunda işlemi sonlandırıyoruz
+                    Toast.makeText(this, "Veriler başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
+                }
         }
     }
 }
+
