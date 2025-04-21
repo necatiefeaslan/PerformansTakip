@@ -10,7 +10,7 @@ import tr.com.example.performanstakip.databinding.ActivityPerformansKontrolBindi
 class PerformansKontrolActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPerformansKontrolBinding
-    private lateinit var studentAdapter: StudentAdapter
+    private lateinit var performansAdapter: PerformansAdapter
     private lateinit var studentsList: List<Student>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,19 +24,27 @@ class PerformansKontrolActivity : AppCompatActivity() {
         // Öğrencilerin listesi (Firestore'dan da alınabilir)
         studentsList = getStudents()
 
-        // Adapter'ı oluşturuyoruz ve performans notunu güncellemeyi sağlıyoruz
-        studentAdapter = StudentAdapter(studentsList) { student, performanceNote ->
-           // student.performansNot = performanceNote // Performans notunu güncelliyoruz
+        // Adapter'ı oluşturuyoruz
+        performansAdapter = PerformansAdapter(studentsList) { student, performansNot ->
+            student.performansNot = performansNot
         }
 
         // RecyclerView ile öğrenciler listeleniyor
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = studentAdapter
+        binding.recyclerView.adapter = performansAdapter
 
         // Kaydet butonuna tıklama
         binding.btnSave.setOnClickListener {
-            saveStudentControls(className, studentsList)
+            if (kontrolNotlarDolu()) {
+                saveStudentControls(className, studentsList)
+            } else {
+                Toast.makeText(this, "Lütfen tüm öğrencilerin notlarını giriniz!", Toast.LENGTH_LONG).show()
+            }
         }
+    }
+
+    private fun kontrolNotlarDolu(): Boolean {
+        return studentsList.all { it.performansNot != null }
     }
 
     private fun getStudents(): List<Student> {
@@ -55,20 +63,16 @@ class PerformansKontrolActivity : AppCompatActivity() {
             val studentData = hashMapOf(
                 "name" to student.name,
                 "number" to student.number,
-                "performans_note" to student.performansNot // Performans notunu kaydediyoruz
+                "performans_not" to student.performansNot
             )
 
             db.collection("kontroller")
-                .document(className) // Sınıf adıyla belgenin referansı
-                .collection("ogrenciler") // Öğrencilerin koleksiyonu
-                .document(student.name) // Öğrenci ismini benzersiz ID olarak kullanıyoruz
-                .set(
-                    studentData,
-                    com.google.firebase.firestore.SetOptions.merge()
-                ) // Merge işlemi ile eski veriyi silmeden ekleme
+                .document(className)
+                .collection("ogrenciler")
+                .document(student.name)
+                .set(studentData, com.google.firebase.firestore.SetOptions.merge())
                 .addOnSuccessListener {
-                    // Başarı durumunda işlemi sonlandırıyoruz
-                    Toast.makeText(this, "Veriler başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Notlar başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()

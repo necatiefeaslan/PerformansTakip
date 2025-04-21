@@ -10,7 +10,7 @@ import tr.com.example.performanstakip.databinding.ActivityOdevKontrolBinding
 class OdevKontrolActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOdevKontrolBinding
-    private lateinit var studentAdapter: StudentAdapter
+    private lateinit var odevAdapter: OdevAdapter
     private lateinit var studentsList: List<Student>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,24 +18,20 @@ class OdevKontrolActivity : AppCompatActivity() {
         binding = ActivityOdevKontrolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Class ve Öğrenci adı alınıyor
+        // Class adı alınıyor
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
-        val studentName = intent.getStringExtra("STUDENT_NAME") ?: "Bilinmeyen Öğrenci"
 
         // Öğrencilerin listesi (Firestore'dan da alınabilir)
         studentsList = getStudents()
 
-        studentAdapter = StudentAdapter(
-            studentsList,
-            { student, isChecked ->
-                student.isOdevDone = isChecked
-            }
-        )
-
+        // Adapter'ı oluşturuyoruz
+        odevAdapter = OdevAdapter(studentsList) { student, isChecked ->
+            student.isOdevDone = isChecked
+        }
 
         // RecyclerView ile öğrenciler listeleniyor
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = studentAdapter
+        binding.recyclerView.adapter = odevAdapter
 
         // Kaydet butonuna tıklama
         binding.btnSave.setOnClickListener {
@@ -55,41 +51,24 @@ class OdevKontrolActivity : AppCompatActivity() {
     private fun saveStudentControls(className: String, students: List<Student>) {
         val db = FirebaseFirestore.getInstance()
 
-        // Tüm öğrenciler için işlemi başlatıyoruz
-        var isSuccess = true
-
         students.forEach { student ->
             val studentData = hashMapOf(
                 "name" to student.name,
                 "number" to student.number,
-                "odev" to student.isOdevDone,
-                "kiyafet" to student.isKiyafetDone,
-                "devamsizlik" to student.isDevamsizlikDone
+                "odev_done" to student.isOdevDone
             )
 
             db.collection("kontroller")
-                .document(className) // Sınıf adıyla belgenin referansı
-                .collection("ogrenciler") // Öğrencilerin koleksiyonu
-                .document(student.name.toString()) // Öğrenci numarasını benzersiz ID olarak kullanıyoruz
-                .set(
-                    studentData,
-                    com.google.firebase.firestore.SetOptions.merge()
-                ) // Merge işlemi ile eski veriyi silmeden ekleme
+                .document(className)
+                .collection("ogrenciler")
+                .document(student.name)
+                .set(studentData, com.google.firebase.firestore.SetOptions.merge())
                 .addOnSuccessListener {
-                    // Başarı durumunda flag'i true yapıyoruz
-                    isSuccess = isSuccess && true
+                    Toast.makeText(this, "Veriler başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { exception ->
-                    // Hata durumunda flag'i false yapıyoruz
-                    isSuccess = false
                     Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
                 }
-        }
-
-        // Tüm işlemler tamamlandığında kaydetme işlemini sonlandırıyoruz
-        if (isSuccess) {
-            Toast.makeText(this, "Veriler başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
-            finish()
         }
     }
 }

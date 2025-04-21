@@ -10,7 +10,7 @@ import tr.com.example.performanstakip.databinding.ActivityDevamsizlikKontrolBind
 class DevamsizlikKontrolActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDevamsizlikKontrolBinding
-    private lateinit var studentAdapter: StudentAdapter
+    private lateinit var devamsizlikAdapter: DevamsizlikAdapter
     private lateinit var studentsList: List<Student>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,13 +24,14 @@ class DevamsizlikKontrolActivity : AppCompatActivity() {
         // Öğrencilerin listesi (Firestore'dan da alınabilir)
         studentsList = getStudents()
 
-        studentAdapter = StudentAdapter(studentsList) { student, isChecked ->
+        // Adapter'ı oluşturuyoruz
+        devamsizlikAdapter = DevamsizlikAdapter(studentsList) { student, isChecked ->
             student.isDevamsizlikDone = isChecked
         }
 
         // RecyclerView ile öğrenciler listeleniyor
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = studentAdapter
+        binding.recyclerView.adapter = devamsizlikAdapter
 
         // Kaydet butonuna tıklama
         binding.btnSave.setOnClickListener {
@@ -54,28 +55,20 @@ class DevamsizlikKontrolActivity : AppCompatActivity() {
             val studentData = hashMapOf(
                 "name" to student.name,
                 "number" to student.number,
-
-                "devamsizlik" to student.isDevamsizlikDone
+                "devamsizlik_done" to student.isDevamsizlikDone
             )
 
             db.collection("kontroller")
-                .document(className) // Sınıf adıyla belgenin referansı
-                .collection("ogrenciler") // Öğrencilerin koleksiyonu
-                .document(student.name) // Öğrenci numarasını benzersiz ID olarak kullanıyoruz
-                .set(
-                    studentData,
-                    com.google.firebase.firestore.SetOptions.merge()
-                ) // Merge işlemi ile eski veriyi silmeden ekleme
+                .document(className)
+                .collection("ogrenciler")
+                .document(student.name)
+                .set(studentData, com.google.firebase.firestore.SetOptions.merge())
                 .addOnSuccessListener {
-                    // Başarı durumunda işlemi sonlandırıyoruz
+                    Toast.makeText(this, "Veriler başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
                 }
         }
-
-        // Veriler başarıyla kaydedildiyse
-        Toast.makeText(this, "Veriler başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
-        finish()
     }
 }

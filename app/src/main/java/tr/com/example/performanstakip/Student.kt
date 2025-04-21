@@ -6,7 +6,7 @@ data class Student(
     var isOdevDone: Boolean = false,
     var isKiyafetDone: Boolean = false,
     var isDevamsizlikDone: Boolean = false,
-    var performansNot: String? = null // Burada performansNot'u kullanıyoruz
+    var performansNot: Int? = null
 )
 
 

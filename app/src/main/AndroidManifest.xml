@@ -27,9 +27,7 @@
         <activity
             android:name=".StudentDetailActivity"
             android:exported="false" />
-        <activity
-            android:name=".StudentListActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ClassListActivity"
             android:exported="false" />
