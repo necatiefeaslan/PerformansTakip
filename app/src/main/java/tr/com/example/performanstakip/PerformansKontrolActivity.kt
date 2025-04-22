@@ -12,6 +12,7 @@ class PerformansKontrolActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPerformansKontrolBinding
     private lateinit var performansAdapter: PerformansAdapter
     private lateinit var studentsList: List<Student>
+    private var saveCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +59,7 @@ class PerformansKontrolActivity : AppCompatActivity() {
 
     private fun saveStudentControls(className: String, students: List<Student>) {
         val db = FirebaseFirestore.getInstance()
+        saveCount = 0
 
         students.forEach { student ->
             val studentData = hashMapOf(
@@ -72,7 +74,11 @@ class PerformansKontrolActivity : AppCompatActivity() {
                 .document(student.name)
                 .set(studentData, com.google.firebase.firestore.SetOptions.merge())
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Notlar başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
+                    saveCount++
+                    if (saveCount == students.size) {
+                        Toast.makeText(this, "Notlar başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
+                        finish() // Aktiviteyi kapat
+                    }
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
