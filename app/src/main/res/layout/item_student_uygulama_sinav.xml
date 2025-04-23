@@ -3,20 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:elevation="4dp"
-    android:backgroundTint="@android:color/white"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="6dp">
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:padding="16dp">
 
-        <!-- Öğrenci Adı ve Numarası -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -24,41 +21,47 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/studentName"
+                android:id="@+id/studentNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Öğrenci Adı"
-                android:textSize="18sp"
                 android:textColor="@android:color/black"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/studentNumber"
+                android:id="@+id/studentNumberTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No: 123"
-                android:textSize="14sp"
+                android:layout_marginTop="4dp"
                 android:textColor="@android:color/darker_gray"
-                android:layout_marginTop="4dp" />
+                android:textSize="14sp" />
+
         </LinearLayout>
 
-        <!-- Devamsızlık Switch -->
+        <!-- Not Girişi -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
-            
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Devamsızlık"
+                android:text="Not:"
                 android:layout_marginEnd="8dp"/>
-            
-            <Switch
-                android:id="@+id/switchDevamsizlik"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/gradeEditText"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="3"
+                android:hint="0-100"
+                android:textAlignment="center"
+                android:background="@android:drawable/edit_text" />
         </LinearLayout>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView> 

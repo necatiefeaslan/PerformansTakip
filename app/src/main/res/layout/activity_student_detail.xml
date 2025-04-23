@@ -78,10 +78,10 @@
 
             <!-- ✅ Yeni Devamsızlık Kontrol Satırı -->
             <TextView
-                android:id="@+id/devamsizlikKontrol"
+                android:id="@+id/uygulamaSinaviKontrol"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="+ Devamsızlık Kontrol"
+                android:text="+ Uygulama Sınavı Kontrol"
                 android:textStyle="bold"
                 android:padding="12dp"
                 android:background="?android:attr/selectableItemBackground" />

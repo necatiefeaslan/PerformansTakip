@@ -37,15 +37,22 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Tarih -->
-        <TextView
-            android:id="@+id/tvTarih"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:background="@android:color/white"
-            android:elevation="2dp"
             android:layout_marginBottom="16dp"
-            android:textSize="16sp" />
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTarih"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tarih"
+                android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Öğrenciler Listesi -->
         <androidx.recyclerview.widget.RecyclerView

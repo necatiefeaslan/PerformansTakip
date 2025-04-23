@@ -1,5 +1,6 @@
 package tr.com.example.performanstakip
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,8 @@ class OdevKontrolActivity : AppCompatActivity() {
     private lateinit var odevAdapter: OdevAdapter
     private lateinit var studentsList: List<Student>
     private var saveCount = 0
+    private val calendar = Calendar.getInstance()
+    private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,9 +28,12 @@ class OdevKontrolActivity : AppCompatActivity() {
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
 
         // Bugünün tarihini ayarla
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        val currentDate = dateFormat.format(Date())
-        binding.tvTarih.text = "Tarih: $currentDate"
+        binding.etTarih.setText(dateFormat.format(calendar.time))
+
+        // Tarih seçici tıklama
+        binding.etTarih.setOnClickListener {
+            showDatePicker()
+        }
 
         // Öğrencilerin listesi (Firestore'dan da alınabilir)
         studentsList = getStudents()
@@ -48,8 +54,24 @@ class OdevKontrolActivity : AppCompatActivity() {
                 Toast.makeText(this, "Lütfen ödev adını giriniz", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            saveStudentControls(className, studentsList, odevAdi, currentDate)
+            saveStudentControls(className, studentsList, odevAdi, binding.etTarih.text.toString())
         }
+    }
+
+    private fun showDatePicker() {
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                binding.etTarih.setText(dateFormat.format(calendar.time))
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
     }
 
     private fun getStudents(): List<Student> {

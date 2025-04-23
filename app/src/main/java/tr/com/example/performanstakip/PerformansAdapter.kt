@@ -9,38 +9,59 @@ import tr.com.example.performanstakip.databinding.ItemStudentPerformansBinding
 
 class PerformansAdapter(
     private val students: List<Student>,
-    private val onPerformansChanged: (Student, Int) -> Unit
-) : RecyclerView.Adapter<PerformansAdapter.ViewHolder>() {
+    private val onGradeChanged: (Student, Float?) -> Unit
+) : RecyclerView.Adapter<PerformansAdapter.PerformansViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemStudentPerformansBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
-    }
+    inner class PerformansViewHolder(private val binding: ItemStudentPerformansBinding) : RecyclerView.ViewHolder(binding.root) {
+        private var textWatcher: TextWatcher? = null
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val student = students[position]
-        holder.bind(student)
-    }
-
-    inner class ViewHolder(private val binding: ItemStudentPerformansBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(student: Student) {
             binding.studentName.text = student.name
-            binding.studentNumber.text = "No: ${student.number}"
-
-            // Performans notu EditText
-            binding.editTextPerformans.setText(student.performansNot?.toString() ?: "")
-            binding.editTextPerformans.addTextChangedListener(object : TextWatcher {
+            binding.studentNumber.text = student.number.toString()
+            
+            // Remove previous TextWatcher if exists
+            textWatcher?.let { binding.editTextPerformans.removeTextChangedListener(it) }
+            
+            // Set current grade if exists
+            binding.editTextPerformans.setText(student.performansNot?.toInt()?.toString() ?: "")
+            
+            // Add new TextWatcher
+            textWatcher = object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
-                    val performansNot = s.toString().toIntOrNull() ?: 0
-                    if (performansNot in 0..100) {
-                        onPerformansChanged(student, performansNot)
+                    val gradeText = s.toString()
+                    if (gradeText.isEmpty()) {
+                        onGradeChanged(student, null)
+                        return
+                    }
+                    
+                    val grade = gradeText.toFloatOrNull()
+                    if (grade != null) {
+                        if (grade < 0 || grade > 100) {
+                            binding.editTextPerformans.error = "Not 0-100 arasında olmalıdır"
+                        } else {
+                            binding.editTextPerformans.error = null
+                            onGradeChanged(student, grade)
+                        }
+                    } else {
+                        binding.editTextPerformans.error = "Geçerli bir not giriniz"
                     }
                 }
-            })
+            }
+            
+            binding.editTextPerformans.addTextChangedListener(textWatcher)
         }
     }
 
-    override fun getItemCount(): Int = students.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PerformansViewHolder {
+        val binding = ItemStudentPerformansBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PerformansViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: PerformansViewHolder, position: Int) {
+        holder.bind(students[position])
+    }
+
+    override fun getItemCount() = students.size
 } 

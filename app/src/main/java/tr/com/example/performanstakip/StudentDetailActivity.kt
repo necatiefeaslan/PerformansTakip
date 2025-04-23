@@ -46,8 +46,8 @@ class StudentDetailActivity : AppCompatActivity() {
         }
 
         // ✅ Devamsızlık kontrol sayfasına git
-        binding.devamsizlikKontrol.setOnClickListener {
-            val intent = Intent(this, DevamsizlikKontrolActivity::class.java)
+        binding.uygulamaSinaviKontrol.setOnClickListener {
+            val intent = Intent(this, UygulamaSinavActivity::class.java)
             intent.putExtra("CLASS_NAME", className)
 
             startActivity(intent)

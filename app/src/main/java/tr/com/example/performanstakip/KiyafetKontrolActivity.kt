@@ -6,13 +6,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import tr.com.example.performanstakip.databinding.ActivityKiyafetKontrolBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class KiyafetKontrolActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityKiyafetKontrolBinding
-    private lateinit var kiyafetAdapter: KiyafetAdapter
+    private lateinit var adapter: KiyafetAdapter
     private lateinit var studentsList: List<Student>
     private var saveCount = 0
+    private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,58 +25,76 @@ class KiyafetKontrolActivity : AppCompatActivity() {
         // Class adı alınıyor
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
 
-        // Öğrencilerin listesi (Firestore'dan da alınabilir)
+        // Bugünün tarihini ayarla
+        binding.etTarih.setText(dateFormat.format(Date()))
+
+        // Öğrencilerin listesi
         studentsList = getStudents()
 
         // Adapter'ı oluşturuyoruz
-        kiyafetAdapter = KiyafetAdapter(studentsList) { student, isChecked ->
-            student.isKiyafetDone = isChecked
+        adapter = KiyafetAdapter(studentsList) { student, isDone ->
+            student.isKiyafetDone = isDone
         }
 
         // RecyclerView ile öğrenciler listeleniyor
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = kiyafetAdapter
+        binding.recyclerView.adapter = adapter
 
         // Kaydet butonuna tıklama
         binding.btnSave.setOnClickListener {
-            saveStudentControls(className, studentsList)
+            if (kontrolNotlarDolu()) {
+                saveStudentControls(className)
+            } else {
+                Toast.makeText(this, "Lütfen tüm öğrencilerin kontrolünü yapınız!", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
     private fun getStudents(): List<Student> {
-        // Öğrencilerin listesi Firestore'dan alınabilir
         return listOf(
-            Student("Ahmet Yılmaz", 123),
-            Student("Mehmet Kaya", 124),
-            Student("Ayşe Demir", 125)
+            Student("Ahmet Yılmaz", 101),
+            Student("Mehmet Kaya", 102),
+            Student("Ayşe Demir", 103)
         )
     }
 
-    private fun saveStudentControls(className: String, students: List<Student>) {
+    private fun kontrolNotlarDolu(): Boolean {
+        return studentsList.all { it.isKiyafetDone != null }
+    }
+
+    private fun saveStudentControls(className: String) {
         val db = FirebaseFirestore.getInstance()
         saveCount = 0
 
-        students.forEach { student ->
+        binding.progressBar.visibility = android.view.View.VISIBLE
+        binding.btnSave.isEnabled = false
+
+        val currentDate = binding.etTarih.text.toString()
+
+        studentsList.forEach { student ->
             val studentData = hashMapOf(
                 "name" to student.name,
                 "number" to student.number,
-                "kiyafet_done" to student.isKiyafetDone
+                "isKiyafetDone" to student.isKiyafetDone,
+                "date" to currentDate
             )
 
-            db.collection("kontroller")
+            db.collection("kiyafetKontrol")
                 .document(className)
                 .collection("ogrenciler")
                 .document(student.name)
-                .set(studentData, com.google.firebase.firestore.SetOptions.merge())
+                .set(studentData)
                 .addOnSuccessListener {
                     saveCount++
-                    if (saveCount == students.size) {
+                    if (saveCount == studentsList.size) {
                         Toast.makeText(this, "Kıyafet kontrolleri başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
-                        finish() // Aktiviteyi kapat
+                        finish()
                     }
                 }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Hata: ${e.message}", Toast.LENGTH_LONG).show()
+                    binding.progressBar.visibility = android.view.View.GONE
+                    binding.btnSave.isEnabled = true
                 }
         }
     }
