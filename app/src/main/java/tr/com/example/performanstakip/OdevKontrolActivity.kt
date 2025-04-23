@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import tr.com.example.performanstakip.databinding.ActivityOdevKontrolBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class OdevKontrolActivity : AppCompatActivity() {
 
@@ -22,6 +24,11 @@ class OdevKontrolActivity : AppCompatActivity() {
         // Class adı alınıyor
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
 
+        // Bugünün tarihini ayarla
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val currentDate = dateFormat.format(Date())
+        binding.tvTarih.text = "Tarih: $currentDate"
+
         // Öğrencilerin listesi (Firestore'dan da alınabilir)
         studentsList = getStudents()
 
@@ -36,7 +43,12 @@ class OdevKontrolActivity : AppCompatActivity() {
 
         // Kaydet butonuna tıklama
         binding.btnSave.setOnClickListener {
-            saveStudentControls(className, studentsList)
+            val odevAdi = binding.etOdevAdi.text.toString().trim()
+            if (odevAdi.isEmpty()) {
+                Toast.makeText(this, "Lütfen ödev adını giriniz", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            saveStudentControls(className, studentsList, odevAdi, currentDate)
         }
     }
 
@@ -49,32 +61,50 @@ class OdevKontrolActivity : AppCompatActivity() {
         )
     }
 
-    private fun saveStudentControls(className: String, students: List<Student>) {
+    private fun saveStudentControls(className: String, students: List<Student>, odevAdi: String, tarih: String) {
         val db = FirebaseFirestore.getInstance()
         saveCount = 0
 
-        students.forEach { student ->
-            val studentData = hashMapOf(
-                "name" to student.name,
-                "number" to student.number,
-                "odev_done" to student.isOdevDone
-            )
+        // Ödev kontrolünün ana dokümanını oluştur
+        val odevKontrolData = hashMapOf(
+            "odev_adi" to odevAdi,
+            "tarih" to tarih,
+            "sinif" to className
+        )
 
-            db.collection("kontroller")
-                .document(className)
-                .collection("ogrenciler")
-                .document(student.name)
-                .set(studentData, com.google.firebase.firestore.SetOptions.merge())
-                .addOnSuccessListener {
-                    saveCount++
-                    if (saveCount == students.size) {
-                        Toast.makeText(this, "Ödev kontrolleri başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
-                        finish() // Aktiviteyi kapat
-                    }
+        // Önce ödev kontrol dokümanını oluştur
+        db.collection("odev_kontroller")
+            .add(odevKontrolData)
+            .addOnSuccessListener { documentReference ->
+                val odevId = documentReference.id
+                
+                // Sonra öğrenci kontrollerini kaydet
+                students.forEach { student ->
+                    val studentData = hashMapOf(
+                        "name" to student.name,
+                        "number" to student.number,
+                        "odev_done" to student.isOdevDone
+                    )
+
+                    db.collection("odev_kontroller")
+                        .document(odevId)
+                        .collection("ogrenciler")
+                        .document(student.name)
+                        .set(studentData)
+                        .addOnSuccessListener {
+                            saveCount++
+                            if (saveCount == students.size) {
+                                Toast.makeText(this, "Ödev kontrolleri başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
+                                finish() // Aktiviteyi kapat
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
+                        }
                 }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
-                }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Hata: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
     }
 }
