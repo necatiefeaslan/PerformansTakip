@@ -24,6 +24,11 @@ class UygulamaSinavActivity : AppCompatActivity() {
         binding = ActivityUygulamaSinavBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Geri tuşuna basıldığında aktiviteyi kapat
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
         title = "$className - Uygulama Sınavı"
 
@@ -36,9 +41,10 @@ class UygulamaSinavActivity : AppCompatActivity() {
         // Öğrencileri yükle
         studentsList = getStudents()
 
-        adapter = UygulamaSinavAdapter(studentsList) { student, grade ->
+        // Adapter'ı oluştur (sınav adı olmadan)
+        adapter = UygulamaSinavAdapter(studentsList, { student, grade ->
             student.grade = grade
-        }
+        }, "")  // Boş sınav adı ile başlat
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
@@ -84,36 +90,51 @@ class UygulamaSinavActivity : AppCompatActivity() {
         binding.progressBar.visibility = android.view.View.VISIBLE
         binding.btnSave.isEnabled = false
 
-        studentsList.forEach { student ->
-            val studentData = hashMapOf(
-                "name" to student.name,
-                "number" to student.number,
-                "grade" to student.grade,
-                "examName" to sinavAdi,
-                "date" to sinavTarihi
-            )
+        // Sınav kontrolünün ana dokümanını oluştur
+        val sinavKontrolData = hashMapOf(
+            "sinav_adi" to sinavAdi,
+            "tarih" to sinavTarihi,
+            "sinif" to className
+        )
 
-            db.collection("uygulamaSinavlari")
-                .document(className)
-                .collection("ogrenciler")
-                .document(student.name) // Burada student.name kullanılıyor
-                .set(studentData, SetOptions.merge())
-                .addOnSuccessListener {
-                    saveCount++
-                    if (saveCount == studentsList.size) {
-                        Toast.makeText(this, "Notlar başarıyla kaydedildi", Toast.LENGTH_SHORT)
-                            .show()
-                        finish()
-                    }
+        // Önce sınav kontrol dokümanını oluştur
+        db.collection("uygulamaSinavlari")
+            .document(className)
+            .set(sinavKontrolData)
+            .addOnSuccessListener {
+                // Sonra öğrenci notlarını kaydet
+                studentsList.forEach { student ->
+                    val studentData = hashMapOf(
+                        "name" to student.name,
+                        "number" to student.number,
+                        "grade" to student.grade
+                    )
+
+                    db.collection("uygulamaSinavlari")
+                        .document(className)
+                        .collection("ogrenciler")
+                        .document(student.name)
+                        .set(studentData, SetOptions.merge())
+                        .addOnSuccessListener {
+                            saveCount++
+                            if (saveCount == studentsList.size) {
+                                Toast.makeText(this, "Notlar başarıyla kaydedildi", Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Hata: ${e.message}", Toast.LENGTH_LONG).show()
+                            binding.progressBar.visibility = android.view.View.GONE
+                            binding.btnSave.isEnabled = true
+                        }
                 }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Hata: ${e.message}", Toast.LENGTH_LONG).show()
-                    binding.progressBar.visibility = android.view.View.GONE
-                    binding.btnSave.isEnabled = true
-                }
-        }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Hata: ${e.message}", Toast.LENGTH_LONG).show()
+                binding.progressBar.visibility = android.view.View.GONE
+                binding.btnSave.isEnabled = true
+            }
     }
-
 
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()

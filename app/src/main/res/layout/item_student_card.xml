@@ -1,0 +1,76 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Sol: Ad & Numara -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000"/>
+            <TextView
+                android:id="@+id/tvNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:textColor="#666666"/>
+        </LinearLayout>
+
+        <!-- Sağ: Kontrol Sonuçları -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvOdev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ödev: "
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:id="@+id/tvKiyafet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kıyafet: "
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:id="@+id/tvPerformans"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Performans: "
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:id="@+id/tvSinav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Uyg. Sınavı: "
+                android:textSize="14sp"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+
+
+

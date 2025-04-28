@@ -53,6 +53,13 @@ class StudentDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.btnListClass.setOnClickListener {
+            startActivity(
+                Intent(this, ListActivity::class.java)
+            )
+        }
+
+
         // Geri butonu
         binding.btnBack.setOnClickListener {
             finish()

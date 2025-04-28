@@ -23,6 +23,10 @@ class PerformansKontrolActivity : AppCompatActivity() {
         binding = ActivityPerformansKontrolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         // Class adı alınıyor
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
 

@@ -24,6 +24,11 @@ class OdevKontrolActivity : AppCompatActivity() {
         binding = ActivityOdevKontrolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Geri tuşuna basıldığında aktiviteyi kapat
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         // Class adı alınıyor
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
 
@@ -96,10 +101,9 @@ class OdevKontrolActivity : AppCompatActivity() {
 
         // Önce ödev kontrol dokümanını oluştur
         db.collection("odev_kontroller")
-            .add(odevKontrolData)
-            .addOnSuccessListener { documentReference ->
-                val odevId = documentReference.id
-                
+            .document(className)  // className'i ID olarak kullan
+            .set(odevKontrolData)  // set() kullanarak dokümanı oluştur
+            .addOnSuccessListener {
                 // Sonra öğrenci kontrollerini kaydet
                 students.forEach { student ->
                     val studentData = hashMapOf(
@@ -109,7 +113,7 @@ class OdevKontrolActivity : AppCompatActivity() {
                     )
 
                     db.collection("odev_kontroller")
-                        .document(odevId)
+                        .document(className)
                         .collection("ogrenciler")
                         .document(student.name)
                         .set(studentData)

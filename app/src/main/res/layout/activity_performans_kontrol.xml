@@ -56,6 +56,15 @@
             android:backgroundTint="#2196F3"
             android:layout_marginBottom="24dp" />
 
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Geri"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF9800"
+            android:layout_marginBottom="24dp" />
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"

@@ -8,6 +8,8 @@ data class Student(
     var isKiyafetDone: Boolean = false,
     var uygulamaSinavNotu: Int? = null,
     var performansNot: Float? = null,
+    var sinav: Int = 0,
+    var sinavAdi: String = ""
 )
 
 

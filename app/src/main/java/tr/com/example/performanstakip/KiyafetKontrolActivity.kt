@@ -22,6 +22,11 @@ class KiyafetKontrolActivity : AppCompatActivity() {
         binding = ActivityKiyafetKontrolBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Geri tuşuna basıldığında aktiviteyi kapat
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         // Class adı alınıyor
         val className = intent.getStringExtra("CLASS_NAME") ?: ""
 

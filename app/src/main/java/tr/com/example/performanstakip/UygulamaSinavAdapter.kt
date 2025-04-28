@@ -9,13 +9,21 @@ import tr.com.example.performanstakip.databinding.ItemStudentUygulamaSinavBindin
 
 class UygulamaSinavAdapter(
     private val students: List<Student>,
-    private val onGradeChanged: (Student, Int) -> Unit
+    private val onGradeChanged: (Student, Int) -> Unit,
+    private val sinavAdi: String
 ) : RecyclerView.Adapter<UygulamaSinavAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemStudentUygulamaSinavBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(student: Student) {
             binding.studentNameTextView.text = student.name
             binding.studentNumberTextView.text = "No: ${student.number}"
+            
+            // Sınav adı ve notu göster
+            binding.tvSinav.text = if (sinavAdi.isNotEmpty() && student.grade != null) {
+                "$sinavAdi - ${student.grade}"
+            } else {
+                ""  // Boş durumda hiçbir şey gösterme
+            }
 
             // Mevcut notu göster
             binding.gradeEditText.setText(student.grade?.toString() ?: "")
